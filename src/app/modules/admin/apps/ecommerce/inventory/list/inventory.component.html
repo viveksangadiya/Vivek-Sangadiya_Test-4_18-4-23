@@ -143,21 +143,26 @@
                             />
                         </mat-form-field>
 
-
                         <mat-form-field class="w-full">
-                            <mat-label>Campus</mat-label>
-                            <input
-                                matInput
-                                [formControlName]="'campus'"
-                            />
+                            <mat-label>
+                                Campus
+                            </mat-label>
+                            <mat-select  [formControlName]="'campus'">
+                            <mat-option *ngFor="let data of campusdata"  [value]="data['campusId']">
+                              {{data['name']}}
+                            </mat-option>
+                        </mat-select>
                         </mat-form-field>
 
-                      <mat-form-field class="w-full">
-                            <mat-label>Zone</mat-label>
-                            <input
-                                matInput
-                                [formControlName]="'zone'"
-                            />
+                        <mat-form-field class="w-full">
+                            <mat-label>
+                                Zone
+                            </mat-label>
+                            <mat-select  [formControlName]="'zone'">
+                            <mat-option *ngFor="let data of zonedata"  [value]="data['zoneId']">
+                              {{data['name']}}
+                            </mat-option>
+                        </mat-select>
                         </mat-form-field>
 
                         <mat-form-field class="w-full">
@@ -216,6 +221,9 @@
                             ></mat-datepicker-toggle>
                             <mat-datepicker #picker></mat-datepicker>
                         </mat-form-field>
+
+                          <input  type="file"  (change)="onFileSelected($event)">
+                          <button mat-button color="primary" (click)="upload()">Upload</button>
                         <button
                             mat-raised-button
                             color="primary"
@@ -233,7 +241,7 @@
 
 
                             <ng-container *ngFor="let product of allBuilding; trackBy: trackByFn">
-                                <div class="inventory-grid grid items-center gap-4 py-3 px-6 md:px-8 border-b">
+                                <div class="inventory-grid grid items-center gap-2 py-3 px-6 md:px-8 border-b">
 
                                     <!-- Image -->
                                     <!-- <div class="flex items-center">
@@ -254,11 +262,10 @@
                                     <!-- SKU -->
                                     <div class="hidden md:block truncate">
                                        {{product.architect}}
-                                        <!-- {{product.configs[0].buildingName}} -->
                                     </div>
 
                                     <!-- Name -->
-                                    <div class="truncate">
+                                    <div class="hidden sm:block">
                                         {{product.buildingName}}
                                     </div>
 
@@ -330,31 +337,6 @@
 
                 <!-- </ng-container>
             </ng-container> -->
-
-            <!-- <form #buildingdata="ngForm">
-                <fieldset>
-                    <label for="pname" id="name-label">Building Name
-                        <input class="field" type="text" id="pname" name="buildingName" placeholder="Enter Building name" required
-                            [(ngModel)]="buildingData.buildingName"></label><br>
-        
-                    <label for="pname" id="name-label">Building Number
-                        <input class="field" type="text" id="pnumber" name="BuildingNo" placeholder="Enter Program Number"
-                            required [(ngModel)]="buildingData.BuildingNo"></label><br>
-         -->
-                    <!-- <label for="pname" id="name-label">Program Budget
-                        <input class="field" type="text" id="pbudget" name="programBudget" placeholder="Enter Program Budget"
-                            required [(ngModel)]="program.programBudget"></label><br>
-        
-                    <label for="pname" id="name-label">Program Description
-                        <input class="field" type="text" id="pdesc" name="programDescription"
-                            placeholder="Enter Program Description" required
-                            [(ngModel)]="program.programDescription"></label><br> -->
-        
-                    <!-- <button type="button" name="submission" class="btn btn-success" (click)="createProduct()">Add</button>
-                </fieldset>
-            </form> -->
-
-
 
             <ng-template
                 #rowDetailsTemplate

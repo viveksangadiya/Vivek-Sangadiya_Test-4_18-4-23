@@ -142,7 +142,7 @@ export class InventoryService
             formObject.append(key,`${(data as any)[key]}`);
         }
         formObject.append("IsActive","false")
-        formObject.append("BuildingImage","")
+        // formObject.append("BuildingImage","")
         formObject.append("Floors","[]")
         formObject.append("EntityJson","[]")
         formObject.append("description","None")
@@ -157,6 +157,12 @@ export class InventoryService
         const url = `https://cmi-ofm.azurewebsites.net/api/EntityConfig/GetBuildingID?BuildingID=${id}`
 
         return this._httpClient.get(url)
+    }
+
+
+    getZonesByCampus(campusId:string){
+        const url=`https://cmi-ofm.azurewebsites.net/api/Zone/getZonesByCampus`
+        return this._httpClient.post(url,campusId)
     }
 
     editConfigData(data:any,productId:string){

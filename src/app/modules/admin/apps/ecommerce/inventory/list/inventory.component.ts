@@ -3,7 +3,7 @@ import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } 
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { debounceTime, map, merge, Observable, Subject, switchMap, takeUntil } from 'rxjs';
+import { debounceTime, map, merge, Observable, pluck, Subject, switchMap, takeUntil } from 'rxjs';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { Config, InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
@@ -11,9 +11,9 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 import { Building, Campu } from '../../building';
 
 @Component({
-    selector       : 'inventory-list',
-    templateUrl    : './inventory.component.html',
-    styles         : [
+    selector: 'inventory-list',
+    templateUrl: './inventory.component.html',
+    styles: [
         /* language=SCSS */
         `
             .inventory-grid {
@@ -33,17 +33,16 @@ import { Building, Campu } from '../../building';
             }
         `
     ],
-    encapsulation  : ViewEncapsulation.None,
+    encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    animations     : fuseAnimations
+    animations: fuseAnimations
 })
-export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
-{
+export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
     @ViewChild(MatSort) private _sort: MatSort;
 
     products$: Observable<InventoryProduct[]>;
-    
+
     brands: InventoryBrand[];
     categories: InventoryCategory[];
     filteredTags: InventoryTag[];
@@ -59,12 +58,15 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
 
-    allBuilding : Building<Config<Campu[]>>;
-    selectedBuilding : UntypedFormGroup;
+    allBuilding: Building<Config<Campu[]>>;
+    selectedBuilding: UntypedFormGroup;
     show: boolean = false;
-    updateButton:boolean=false;
-    resData:any;
-    productIdForEdit:string;
+    updateButton: boolean = false;
+    resData: any;
+    productIdForEdit: string;
+    campusDropdownList: any[] = [];
+
+
     /**
      * Constructor
      */
@@ -73,9 +75,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: UntypedFormBuilder,
         private _inventoryService: InventoryService
-    )
-    {
-       
+    ) {
+
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -85,56 +86,154 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * On init
      */
-    ngOnInit(): void
-    {
-        this._inventoryService.getAllBuildings().pipe(map((resData:any)=>resData.configs)).subscribe((res:any)=>
-        {
-            console.log(res)
-            this.allBuilding=res
-        }
-       )
-       
-        // Create the selected product form
-        this.selectedProductForm = this._formBuilder.group({
-            id               : [''],
-            category         : [''],
-            name             : ['', [Validators.required]],
-            description      : [''],
-            tags             : [[]],
-            sku              : [''],
-            barcode          : [''],
-            brand            : [''],
-            vendor           : [''],
-            stock            : [''],
-            reserved         : [''],
-            cost             : [''],
-            basePrice        : [''],
-            taxPercent       : [''],
-            price            : [''],
-            weight           : [''],
-            thumbnail        : [''],
-            images           : [[]],
-            currentImageIndex: [0], // Image index that is currently being viewed
-            active           : [false]
-        });
 
-        this.selectedBuilding=this._formBuilder.group({
-            buildingName : [''],
-            buildingNo : [''],
-            date_constructed : [''],
-            architect :[''],
-            contractor:[''],
-            campus:[''],
-            renovation_History:[''],
-            zone:[''],
-            wingList:[''],
-            construction_Cost:[0],
-            buildingImage : [''],
-            description:[''],
-            
+    campusdata: any[] = [];
+    zonedata: any[] = [];
+    zoneDropdownList: any[] = []
+    wingDropdownList: any[] = [];
+    wingdata: any[] = [];
+    ngOnInit(): void {
+
+        this._inventoryService.getAllBuildings().subscribe(res => console.log(res))
+
+        this._inventoryService.getAllBuildings().pipe(map((resData: any) => resData.configs)).subscribe((res: any) => {
+            console.log(res)
+            this.allBuilding = res
+
+        }
+        )
+
+        this._inventoryService.getAllBuildings().pipe(
+            pluck('configs'),
+            /* map((res:any)=>res[0].campus) */
+            map((res: any) => res.map((res) => res.campus))
+        ).subscribe((res: any) => {
+            for (let x in res) {
+                this.campusDropdownList.push(res[x])
+            }
+
+            for (let i = 0; i < this.campusDropdownList.length; i++) {
+                let data: any;
+                data = this.campusDropdownList[i];
+                if (data == null) {
+                    console.log('null');
+                }
+                else {
+
+                    for (let j = 0; j < data.length; j++) {
+                        console.log(data[j].campusId);
+                        this.campusdata.push(data[j])
+                    }
+
+                }
+            }
+            console.log(this.campusdata)
         })
 
-        
+        this._inventoryService.getAllBuildings().pipe(
+            pluck('configs'),
+            /* map((res:any)=>res[0].campus) */
+            map((res: any) => res.map((res) => res.zone))
+        ).subscribe((res: any) => {
+            for (let x in res) {
+                this.zoneDropdownList.push(res[x])
+            }
+
+            for (let i = 0; i < this.zoneDropdownList.length; i++) {
+                let data: any;
+                data = this.zoneDropdownList[i];
+                if (data == null) {
+                    console.log('null');
+                }
+                else {
+
+                    for (let j = 0; j < data.length; j++) {
+                        console.log(data[j].campusId);
+                        this.zonedata.push(data[j])
+                    }
+
+                }
+            }
+            console.log(this.zonedata)
+        })
+
+
+
+        this._inventoryService.getAllBuildings().pipe(
+            pluck('configs'),
+            /* map((res:any)=>res[0].campus) */
+            map((res: any) => res.map((res) => res.wingList))
+        ).subscribe((res: any) => {
+            for (let x in res) {
+                this.wingDropdownList.push(res[x])
+            }
+
+            for (let i = 0; i < this.wingDropdownList.length; i++) {
+                let data: any;
+                data = this.wingDropdownList[i];
+                if (data == null) {
+                    console.log('null');
+                }
+                else {
+
+                    for (let j = 0; j < data.length; j++) {
+                        console.log(data[j].campusId);
+                        this.zonedata.push(data[j])
+                    }
+
+                }
+            }
+            console.log(this.zonedata)
+        })
+
+
+        // Create the selected product form
+        this.selectedProductForm = this._formBuilder.group({
+            id: [''],
+            category: [''],
+            name: ['', [Validators.required]],
+            description: [''],
+            tags: [[]],
+            sku: [''],
+            barcode: [''],
+            brand: [''],
+            vendor: [''],
+            stock: [''],
+            reserved: [''],
+            cost: [''],
+            basePrice: [''],
+            taxPercent: [''],
+            price: [''],
+            weight: [''],
+            thumbnail: [''],
+            images: [[]],
+            currentImageIndex: [0], // Image index that is currently being viewed
+            active: [false]
+        });
+
+        const dateConstructed = new Date('Mon Apr 17 2023 00:00:00 GMT+0530 (India Standard Time)').toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        });
+
+        this.selectedBuilding = this._formBuilder.group({
+            buildingName: [''],
+            buildingNo: [''],
+            date_constructed: [''],
+            architect: [''],
+            contractor: [''],
+            campus: [''],
+            renovation_History: [''],
+            zone: [''],
+            wingList: [''],
+            construction_Cost: [0],
+            buildingImage: [''],
+            description: [''],
+            wing: ['']
+        })
+
+
 
         // Get the brands
         this._inventoryService.brands$
@@ -220,14 +319,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * After view init
      */
-    ngAfterViewInit(): void
-    {
-        if ( this._sort && this._paginator )
-        {
+    ngAfterViewInit(): void {
+        if (this._sort && this._paginator) {
             // Set the initial sort
             this._sort.sort({
-                id          : 'name',
-                start       : 'asc',
+                id: 'name',
+                start: 'asc',
                 disableClear: true
             });
 
@@ -262,8 +359,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * On destroy
      */
-    ngOnDestroy(): void
-    {
+    ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();
@@ -271,40 +367,73 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
+
     // -----------------------------------------------------------------------------------------------------
 
+    selectedFile: File;
+
+    onFileSelected(event): void {
+        this.selectedFile = event.target.files[0];
+    }
+    upload(): void {
+        if (!this.selectedFile) {
+            console.log('No file selected');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.readAsDataURL(this.selectedFile);
+        reader.onload = () => {
+            const base64String = reader.result.toString().split(',')[1];
+            this.selectedBuilding.get('buildingImage').setValue(base64String);
+            console.log(typeof base64String);
+        };
+    }
+
+    /* onFileSelected(event) {
+  const file: File = event.target.files[0];
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => {
+    this.selectedBuilding.controls['buildingImage'].setValue(reader.result as string);
+  };
+} */
     /**
      * Toggle product details
      *
      * @param productId
      */
-    toggleDetails(productId: string): void
-    {
+    toggleDetails(productId: string): void {
+        this.show = true;
         this.productIdForEdit = productId;
         this.updateButton = true;
-        this._inventoryService.getConfigDataById(productId).pipe(map((data:any)=> data.building)).subscribe(res=>{
+        this._inventoryService.getConfigDataById(productId).pipe(map((data: any) => data.building)).subscribe(res => {
             console.log(res)
             this.resData = res
             this.selectedBuilding.patchValue({
-            buildingName : res[0].buildingName,
-            buildingNo : res[0].buildingNo,
-            /* date_constructed : res[0].date_constructed, */
-            architect :res[0].architect,
-            contractor:res[0].contractor,
-            campus:res[0].campus[0].name,
-            renovation_History:res[0].renovation_History,
-            zone:res[0].zone[0].name,
-            wingList:res[0].wingList[0].name,
-            construction_Cost:res[0].construction_Cost,
-            buildingImage : res[0].buildingImage,
-            description:res[0].description,
+                buildingName: res[0].buildingName,
+                buildingNo: res[0].buildingNo,
+                /* date_constructed : res[0].date_constructed, */
+                architect: res[0].architect,
+                contractor: res[0].contractor,
+                /* campus:res[0].campus, */
+                campus: res[0].campus[0].campusId,
+                /* campus: res[0].campus[0].name, */
+                renovation_History: res[0].renovation_History,
+                /* zone: res[0].zone, */
+                zone: res[0].zone[0].zoneId,
+                /* wingList: res[0].wingList[0].name, */
+                wingList: res[0].wingList,
+
+                construction_Cost: res[0].construction_Cost,
+                buildingImage: res[0].buildingImage,
+                description: res[0].description,
             })
         })
         /* console.log(this.selectedBuilding.value) */
         /* debugger; */
         // If the product is already selected...
-        if ( this.selectedProduct && this.selectedProduct.id === productId )
-        {
+        if (this.selectedProduct && this.selectedProduct.id === productId) {
             // Close the details
             this.closeDetails();
             return;
@@ -316,7 +445,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
                 /* debugger; */
                 // Set the selected product
                 this.selectedProduct = product;
-                 /* console.log(this.selectedProduct.id) */
+                /* console.log(this.selectedProduct.id) */
                 // Fill the form
                 this.selectedProductForm.patchValue(product);
 
@@ -328,16 +457,14 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Close the details
      */
-    closeDetails(): void
-    {
+    closeDetails(): void {
         this.selectedProduct = null;
     }
 
     /**
      * Cycle through images of selected product
      */
-    cycleImages(forward: boolean = true): void
-    {
+    cycleImages(forward: boolean = true): void {
         // Get the image count and current image index
         const count = this.selectedProductForm.get('images').value.length;
         const currentIndex = this.selectedProductForm.get('currentImageIndex').value;
@@ -347,13 +474,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
         const prevIndex = currentIndex - 1 < 0 ? count - 1 : currentIndex - 1;
 
         // If cycling forward...
-        if ( forward )
-        {
+        if (forward) {
             this.selectedProductForm.get('currentImageIndex').setValue(nextIndex);
         }
         // If cycling backwards...
-        else
-        {
+        else {
             this.selectedProductForm.get('currentImageIndex').setValue(prevIndex);
         }
     }
@@ -361,8 +486,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Toggle the tags edit mode
      */
-    toggleTagsEditMode(): void
-    {
+    toggleTagsEditMode(): void {
         this.tagsEditMode = !this.tagsEditMode;
     }
 
@@ -371,8 +495,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param event
      */
-    filterTags(event): void
-    {
+    filterTags(event): void {
         // Get the value
         const value = event.target.value.toLowerCase();
 
@@ -385,17 +508,14 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param event
      */
-    filterTagsInputKeyDown(event): void
-    {
+    filterTagsInputKeyDown(event): void {
         // Return if the pressed key is not 'Enter'
-        if ( event.key !== 'Enter' )
-        {
+        if (event.key !== 'Enter') {
             return;
         }
 
         // If there is no tag available...
-        if ( this.filteredTags.length === 0 )
-        {
+        if (this.filteredTags.length === 0) {
             // Create the tag
             this.createTag(event.target.value);
 
@@ -411,13 +531,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
         const isTagApplied = this.selectedProduct.tags.find(id => id === tag.id);
 
         // If the found tag is already applied to the product...
-        if ( isTagApplied )
-        {
+        if (isTagApplied) {
             // Remove the tag from the product
             this.removeTagFromProduct(tag);
         }
-        else
-        {
+        else {
             // Otherwise add the tag to the product
             this.addTagToProduct(tag);
         }
@@ -428,8 +546,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param title
      */
-    createTag(title: string): void
-    {
+    createTag(title: string): void {
         const tag = {
             title
         };
@@ -449,8 +566,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
      * @param tag
      * @param event
      */
-    updateTagTitle(tag: InventoryTag, event): void
-    {
+    updateTagTitle(tag: InventoryTag, event): void {
         // Update the title on the tag
         tag.title = event.target.value;
 
@@ -468,8 +584,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param tag
      */
-    deleteTag(tag: InventoryTag): void
-    {
+    deleteTag(tag: InventoryTag): void {
         // Delete the tag from the server
         this._inventoryService.deleteTag(tag.id).subscribe();
 
@@ -482,8 +597,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param tag
      */
-    addTagToProduct(tag: InventoryTag): void
-    {
+    addTagToProduct(tag: InventoryTag): void {
         // Add the tag
         this.selectedProduct.tags.unshift(tag.id);
 
@@ -499,8 +613,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param tag
      */
-    removeTagFromProduct(tag: InventoryTag): void
-    {
+    removeTagFromProduct(tag: InventoryTag): void {
         // Remove the tag
         this.selectedProduct.tags.splice(this.selectedProduct.tags.findIndex(item => item === tag.id), 1);
 
@@ -517,14 +630,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
      * @param tag
      * @param change
      */
-    toggleProductTag(tag: InventoryTag, change: MatCheckboxChange): void
-    {
-        if ( change.checked )
-        {
+    toggleProductTag(tag: InventoryTag, change: MatCheckboxChange): void {
+        if (change.checked) {
             this.addTagToProduct(tag);
         }
-        else
-        {
+        else {
             this.removeTagFromProduct(tag);
         }
     }
@@ -534,8 +644,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param inputValue
      */
-    shouldShowCreateTagButton(inputValue: string): boolean
-    {
+    shouldShowCreateTagButton(inputValue: string): boolean {
         return !!!(inputValue === '' || this.tags.findIndex(tag => tag.title.toLowerCase() === inputValue.toLowerCase()) > -1);
     }
 
@@ -543,51 +652,54 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
      * Create product
      */
 
-    buildingData :any ={
+    buildingData: any = {
         buildingNo: '',
-        buildingName : '',
-        date_constructed:new Date(),
-        architect:'',
-        contractor:'',
-        campus:'',
-        renovation_History:'',
-        zone:'',
-        wing:'',
-        IsActive:false,
-        construction_Cost:0,
-        BuildingImage:'',
-        NoOFFloors:'',
+        buildingName: '',
+        date_constructed: new Date(),
+        architect: '',
+        contractor: '',
+        campus: '',
+        renovation_History: '',
+        zone: '',
+        wing: '',
+        IsActive: false,
+        construction_Cost: 0,
+        BuildingImage: '',
+        NoOFFloors: '',
         Floors: [],
-        EntityJson : [],
-        description:''
+        EntityJson: [],
+        description: ''
     }
 
 
     onSubmit(data) {
-        if(this.updateButton){
+        if (this.updateButton) {
             this.selectedBuilding.value.campus = this.resData[0].campus[0].campusId
             this.selectedBuilding.value.zone = this.resData[0].zone[0].zoneId
-            this.selectedBuilding.value.wingList = this.resData[0].wingList[0].wingId
-            this._inventoryService.editConfigData(data.value,this.productIdForEdit).subscribe(res=>{
-            console.log(res)
-            this.hide()
-        })}else{
-        this._inventoryService
-            .AddConfigData(data.value)
-            .subscribe((response) => {
-                console.log(response);
+            /* this.selectedBuilding.value.wingList = this.resData[0].wingList[0].wingId */
+            this._inventoryService.editConfigData(data.value, this.productIdForEdit).subscribe(res => {
+                console.log(res)
                 this.hide()
-            });
+            })
+        } else {
+            console.log(data.value)
+            this._inventoryService
+                .AddConfigData(data.value)
+                .subscribe((response) => {
+                    console.log(response);
+                    this.hide()
+                });
         }
+        this.selectedBuilding.reset()
+        /* this.showFlashMessage('success') */
     }
 
     hide() {
-    this.show = !this.show;
-    this.updateButton = false
-  }
-    createProduct(): void
-    {
-        this.show=!this.show
+        this.show = !this.show;
+        this.updateButton = false
+    }
+    createProduct(): void {
+        this.show = !this.show
         /* console.log(this.buildingData) */
         // Create the product
         /* this._inventoryService.createBuilding(this.buildingData).subscribe((res)=>{
@@ -595,24 +707,23 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
                 this.searchInputControl.patchValue(res);
                 this._changeDetectorRef.markForCheck();
         }) */
-         this._inventoryService.createProduct().subscribe((newProduct) => {
+        this._inventoryService.createProduct().subscribe((newProduct) => {
 
             // Go to new product
             this.selectedProduct = newProduct;
 
             // Fill the form
-             this.selectedProductForm.patchValue(newProduct); 
-            
+            this.selectedProductForm.patchValue(newProduct);
+
             // Mark for check
             this._changeDetectorRef.markForCheck();
-        }); 
+        });
     }
 
     /**
      * Update the selected product using the form data
      */
-    updateSelectedProduct(): void
-    {
+    updateSelectedProduct(): void {
         // Get the product object
         const product = this.selectedProductForm.getRawValue();
 
@@ -630,11 +741,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Delete the selected product using the form data
      */
-    deleteSelectedProduct(): void
-    {
+    deleteSelectedProduct(): void {
         // Open the confirmation dialog
         const confirmation = this._fuseConfirmationService.open({
-            title  : 'Delete product',
+            title: 'Delete product',
             message: 'Are you sure you want to remove this product? This action cannot be undone!',
             actions: {
                 confirm: {
@@ -647,8 +757,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
         confirmation.afterClosed().subscribe((result) => {
 
             // If the confirm button pressed...
-            if ( result === 'confirmed' )
-            {
+            if (result === 'confirmed') {
 
                 // Get the product object
                 const product = this.selectedProductForm.getRawValue();
@@ -666,8 +775,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Show flash message
      */
-    showFlashMessage(type: 'success' | 'error'): void
-    {
+    showFlashMessage(type: 'success' | 'error'): void {
         // Show the message
         this.flashMessage = type;
 
@@ -690,8 +798,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
      * @param index
      * @param item
      */
-    trackByFn(index: number, item: any): any
-    {
+    trackByFn(index: number, item: any): any {
         return item.id || index;
     }
 }
