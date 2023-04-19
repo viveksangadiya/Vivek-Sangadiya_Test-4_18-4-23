@@ -101,7 +101,7 @@ export class InventoryService
             })
         );
     }
-
+   // Get all building data 
 
     getAllBuildings():Observable<Building<Config<Campu[]>>>{
         return this._httpClient.get<Building<Config<Campu[]>>>("https://cmi-ofm.azurewebsites.net/api/EntityConfig/GetAllBuildings").pipe(
@@ -114,27 +114,6 @@ export class InventoryService
         )
      }
 
-    createBuilding(building:Building<Config<Campu[]>>){
-       const body=new HttpParams()
-       .set('BuildingNo',building.configs.buildingNo)
-       .set('BuildingName',building.configs.buildingName)
-       .set('Description',building.configs.description)
-       .set('Date_constructed',building.configs.date_constructed.toISOString())
-       .set('Architect',building.configs.architect)
-       .set('Contractor',building.configs.contractor)
-       .set('Construction_Cost',building.configs.construction_Cost)
-       .set('Renovation_History',building.configs.renovation_History)
-       .set('Campus',building.configs.campus['campusId'])
-       .set('Zone',building.zone)
-       .set('wing',building.wingList)
-       .set('IsActive',building.isActive)
-       .set('BuildingImage',building.buildingImage)
-       .set('NoOFFloors',building.noOFFloors)
-       .set('Floors',building.floorList)
-
-       return this._httpClient.post("https://cmi-ofm.azurewebsites.net/api/EntityConfig/AddBuildingConfig/",body)
-    }
-
     AddConfigData(data: any) {
         const formObject = new FormData();
 
@@ -142,7 +121,6 @@ export class InventoryService
             formObject.append(key,`${(data as any)[key]}`);
         }
         formObject.append("IsActive","false")
-        // formObject.append("BuildingImage","")
         formObject.append("Floors","[]")
         formObject.append("EntityJson","[]")
         formObject.append("description","None")
@@ -190,22 +168,6 @@ export class InventoryService
 
         return this._httpClient.post(url,formObject)
     }
-
-//     BuildingNo: 1
-// BuildingName: SPM
-// Description: 
-// Date_constructed: 04/18/2023
-// Architect: ss
-// Contractor: Vivek
-// Construction_Cost: 1111
-// Renovation_History: 
-// Campus: ada5412a-53c1-4234-8d52-7148c4309130
-// Zone: 1cda3ce6-c055-49f8-8889-a7a06a07e18b
-// wing: 3aab73da-d7d4-4113-ae26-0a156b18e4d5
-// IsActive: false
-// BuildingImage: 
-// NoOFFloors: undefined
-// Floors: 
 
     /**
      * Get categories

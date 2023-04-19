@@ -389,15 +389,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             console.log(base64String);
         };
     }
-
-    /* onFileSelected(event) {
-  const file: File = event.target.files[0];
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = () => {
-    this.selectedBuilding.controls['buildingImage'].setValue(reader.result as string);
-  };
-} */
     /**
      * Toggle product details
      *
@@ -674,7 +665,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
 
     onSubmit(data) {
-        /* console.log(data.value) */
         if (this.updateButton) {
             this.selectedBuilding.value.campus = this.resData[0].campus[0].campusId
             this.selectedBuilding.value.zone = this.resData[0].zone[0].zoneId
@@ -693,7 +683,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 });
         }
         this.selectedBuilding.reset()
-        /* this.showFlashMessage('success') */
     }
 
     hide() {
@@ -702,13 +691,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     }
     createProduct(): void {
         this.show = !this.show
-        /* console.log(this.buildingData) */
+     
         // Create the product
-        /* this._inventoryService.createBuilding(this.buildingData).subscribe((res)=>{
-                this.selectedBuilding=res;
-                this.searchInputControl.patchValue(res);
-                this._changeDetectorRef.markForCheck();
-        }) */
+       
         this._inventoryService.createProduct().subscribe((newProduct) => {
 
             // Go to new product
