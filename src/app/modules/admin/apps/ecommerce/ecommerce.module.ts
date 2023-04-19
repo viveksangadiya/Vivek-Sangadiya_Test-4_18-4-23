@@ -20,6 +20,7 @@ import { ecommerceRoutes } from 'app/modules/admin/apps/ecommerce/ecommerce.rout
 
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { DatePipe } from '@angular/common';
 
 @NgModule({
     declarations: [
@@ -44,7 +45,8 @@ import { MatNativeDateModule } from '@angular/material/core';
         SharedModule,
         MatNativeDateModule,
         MatDatepickerModule
-    ]
+    ],
+    providers:[DatePipe]
 })
 export class ECommerceModule
 {

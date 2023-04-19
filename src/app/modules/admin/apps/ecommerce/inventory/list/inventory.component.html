@@ -222,7 +222,7 @@
                                 matInput
                                 [matDatepicker]="picker"
                                 name="date"
-                                [formControlName]="'date_constructed'"
+                                [formControl]="selectedBuilding.get('date_constructed')"
                             />
                             <mat-hint>MM/DD/YYYY</mat-hint>
                             <mat-datepicker-toggle

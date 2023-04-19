@@ -9,6 +9,8 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { Config, InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Building, Campu } from '../../building';
+import { DatePipe } from '@angular/common';
+
 
 @Component({
     selector: 'inventory-list',
@@ -78,7 +80,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         private _changeDetectorRef: ChangeDetectorRef,
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: UntypedFormBuilder,
-        private _inventoryService: InventoryService
+        private _inventoryService: InventoryService,
+        private datePipe: DatePipe
     ) {
 
     }
@@ -241,7 +244,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.selectedBuilding = this._formBuilder.group({
             buildingName: [''],
             buildingNo: [''],
-            date_constructed: [''],
+            date_constructed: [new Date('04/06/2023')],
             architect: [''],
             contractor: [''],
             campus: [''],
@@ -677,7 +680,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     buildingData: any = {
         buildingNo: '',
         buildingName: '',
-        date_constructed: new Date(),
+        date_constructed:'',
         architect: '',
         contractor: '',
         campus: '',
