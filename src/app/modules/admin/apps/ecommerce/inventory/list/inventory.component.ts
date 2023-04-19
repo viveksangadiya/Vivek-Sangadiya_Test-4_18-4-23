@@ -93,9 +93,13 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     dataa: any[] = []
     datawings :any[]=[]
+    dummycampus:any[]=[]
     ngOnInit(): void {
         this._inventoryService.getActiveCampus().pipe(map((res: any) => res.zones)).subscribe(res => {
             console.log(res)
+            for(let x in res){
+                    this.dummycampus.push(res[x])
+                }
         }
         )
 
@@ -386,10 +390,13 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     // @ Public methods
 
     // -----------------------------------------------------------------------------------------------------
-
+    dummyzone:any[]=[]
     onCampusSelected(campusId: string) {
-        this._inventoryService.getZonesByCampus(campusId).subscribe((zones) => {
-            console.log(zones)
+        this._inventoryService.getZonesByCampus(campusId).pipe(pluck('zones')).subscribe((resData:any) => {
+            console.log(resData)
+            for(let x in resData){
+                    this.dummyzone.push(resData[x])
+            }
         });
     }
 

@@ -148,7 +148,7 @@
                                 Campus
                             </mat-label>
                             <mat-select  [formControlName]="'campus'" (selectionChange)="onCampusSelected($event.value)">
-                            <mat-option *ngFor="let data of campusdata"  [value]="data['campusId']">
+                            <mat-option *ngFor="let data of dummycampus"  [value]="data['campusId']">
                               {{data['name']}}
                             </mat-option>
                         </mat-select>
@@ -159,7 +159,7 @@
                                 Zone
                             </mat-label>
                             <mat-select  [formControlName]="'zone'">
-                            <mat-option *ngFor="let data of zonedata"  [value]="data['zoneId']">
+                            <mat-option *ngFor="let data of dummyzone"  [value]="data['zoneId']">
                               {{data['name']}}
                             </mat-option>
                         </mat-select>
