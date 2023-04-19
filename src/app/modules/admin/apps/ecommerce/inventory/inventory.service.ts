@@ -17,7 +17,7 @@ export class InventoryService
     private _products: BehaviorSubject<InventoryProduct[] | null> = new BehaviorSubject(null);
     private _tags: BehaviorSubject<InventoryTag[] | null> = new BehaviorSubject(null);
     private _vendors: BehaviorSubject<InventoryVendor[] | null> = new BehaviorSubject(null);
-    private _buildings:BehaviorSubject<Building<Config<Campu[]>> | null> = new BehaviorSubject(null);
+    public _buildings:BehaviorSubject<Building<Config<Campu[]>> | null> = new BehaviorSubject(null);
 
     /**
      * Constructor
@@ -125,7 +125,7 @@ export class InventoryService
        .set('Construction_Cost',building.configs.construction_Cost)
        .set('Renovation_History',building.configs.renovation_History)
        .set('Campus',building.configs.campus['campusId'])
-       .set('Zone',building.configs.zone)
+       .set('Zone',building.zone)
        .set('wing',building.wingList)
        .set('IsActive',building.isActive)
        .set('BuildingImage',building.buildingImage)
@@ -133,6 +133,56 @@ export class InventoryService
        .set('Floors',building.floorList)
 
        return this._httpClient.post("https://cmi-ofm.azurewebsites.net/api/EntityConfig/AddBuildingConfig/",body)
+    }
+
+    AddConfigData(data: any) {
+        const formObject = new FormData();
+
+        for (let key in data) {
+            formObject.append(key,`${(data as any)[key]}`);
+        }
+        formObject.append("IsActive","false")
+        formObject.append("BuildingImage","")
+        formObject.append("Floors","[]")
+        formObject.append("EntityJson","[]")
+        formObject.append("description","None")
+
+        return this._httpClient.post(
+            'https://cmi-ofm.azurewebsites.net/api/EntityConfig/AddBuildingConfig/',
+            formObject
+        );
+    }
+
+    getConfigDataById(id:string){
+        const url = `https://cmi-ofm.azurewebsites.net/api/EntityConfig/GetBuildingID?BuildingID=${id}`
+
+        return this._httpClient.get(url)
+    }
+
+    editConfigData(data:any,productId:string){
+        const formObject = new FormData();
+
+        formObject.append("UniqueId",productId)
+        formObject.append("BuildingNo",data.buildingNo)
+        formObject.append("BuildingName",data.buildingName)
+        formObject.append("Description",data.description)
+        formObject.append("Architect",data.architect)
+        formObject.append("Contractor",data.contractor)
+        formObject.append("Date_constructed",data.date_constructed)
+        formObject.append("Construction_Cost",data.construction_Cost)
+        formObject.append("Renovation_History",data.renovation_History)
+        formObject.append("Campus",data.campus)
+        formObject.append("Zone",data.zone)
+        formObject.append("wing",data.wingList)
+        formObject.append("NoOFFloors",'0')
+        formObject.append("IsActive","false")
+        formObject.append("BuildingImage","")
+        formObject.append("Floors","[]")
+        formObject.append("EntityJson","[]")
+
+        const url =`https://cmi-ofm.azurewebsites.net/api/EntityConfig/EditBuildingConfig/`
+
+        return this._httpClient.post(url,formObject)
     }
 
 //     BuildingNo: 1

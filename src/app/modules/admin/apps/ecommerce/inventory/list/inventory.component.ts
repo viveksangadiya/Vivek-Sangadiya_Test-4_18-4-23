@@ -60,7 +60,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
 
 
     allBuilding : Building<Config<Campu[]>>;
-
+    selectedBuilding : UntypedFormGroup;
+    show: boolean = false;
+    updateButton:boolean=false;
+    resData:any;
+    productIdForEdit:string;
     /**
      * Constructor
      */
@@ -89,6 +93,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
             this.allBuilding=res
         }
        )
+       
         // Create the selected product form
         this.selectedProductForm = this._formBuilder.group({
             id               : [''],
@@ -112,6 +117,24 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
             currentImageIndex: [0], // Image index that is currently being viewed
             active           : [false]
         });
+
+        this.selectedBuilding=this._formBuilder.group({
+            buildingName : [''],
+            buildingNo : [''],
+            date_constructed : [''],
+            architect :[''],
+            contractor:[''],
+            campus:[''],
+            renovation_History:[''],
+            zone:[''],
+            wingList:[''],
+            construction_Cost:[0],
+            buildingImage : [''],
+            description:[''],
+            
+        })
+
+        
 
         // Get the brands
         this._inventoryService.brands$
@@ -257,6 +280,27 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
      */
     toggleDetails(productId: string): void
     {
+        this.productIdForEdit = productId;
+        this.updateButton = true;
+        this._inventoryService.getConfigDataById(productId).pipe(map((data:any)=> data.building)).subscribe(res=>{
+            console.log(res)
+            this.resData = res
+            this.selectedBuilding.patchValue({
+            buildingName : res[0].buildingName,
+            buildingNo : res[0].buildingNo,
+            /* date_constructed : res[0].date_constructed, */
+            architect :res[0].architect,
+            contractor:res[0].contractor,
+            campus:res[0].campus[0].name,
+            renovation_History:res[0].renovation_History,
+            zone:res[0].zone[0].name,
+            wingList:res[0].wingList[0].name,
+            construction_Cost:res[0].construction_Cost,
+            buildingImage : res[0].buildingImage,
+            description:res[0].description,
+            })
+        })
+        /* console.log(this.selectedBuilding.value) */
         /* debugger; */
         // If the product is already selected...
         if ( this.selectedProduct && this.selectedProduct.id === productId )
@@ -508,28 +552,60 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
         campus:'',
         renovation_History:'',
         zone:'',
-        wingList:'',
+        wing:'',
         IsActive:false,
         construction_Cost:0,
-        buildingImage:''
+        BuildingImage:'',
+        NoOFFloors:'',
+        Floors: [],
+        EntityJson : [],
+        description:''
     }
 
 
+    onSubmit(data) {
+        if(this.updateButton){
+            this.selectedBuilding.value.campus = this.resData[0].campus[0].campusId
+            this.selectedBuilding.value.zone = this.resData[0].zone[0].zoneId
+            this.selectedBuilding.value.wingList = this.resData[0].wingList[0].wingId
+            this._inventoryService.editConfigData(data.value,this.productIdForEdit).subscribe(res=>{
+            console.log(res)
+            this.hide()
+        })}else{
+        this._inventoryService
+            .AddConfigData(data.value)
+            .subscribe((response) => {
+                console.log(response);
+                this.hide()
+            });
+        }
+    }
+
+    hide() {
+    this.show = !this.show;
+    this.updateButton = false
+  }
     createProduct(): void
     {
-        console.log(this.buildingData)
+        this.show=!this.show
+        /* console.log(this.buildingData) */
         // Create the product
-        this._inventoryService.createProduct().subscribe((newProduct) => {
+        /* this._inventoryService.createBuilding(this.buildingData).subscribe((res)=>{
+                this.selectedBuilding=res;
+                this.searchInputControl.patchValue(res);
+                this._changeDetectorRef.markForCheck();
+        }) */
+         this._inventoryService.createProduct().subscribe((newProduct) => {
 
             // Go to new product
             this.selectedProduct = newProduct;
 
             // Fill the form
-            this.selectedProductForm.patchValue(newProduct);
-              
+             this.selectedProductForm.patchValue(newProduct); 
+            
             // Mark for check
             this._changeDetectorRef.markForCheck();
-        });
+        }); 
     }
 
     /**
