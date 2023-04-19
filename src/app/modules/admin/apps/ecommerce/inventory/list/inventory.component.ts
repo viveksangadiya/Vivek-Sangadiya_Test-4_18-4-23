@@ -668,7 +668,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         if (this.updateButton) {
             this.selectedBuilding.value.campus = this.resData[0].campus[0].campusId
             this.selectedBuilding.value.zone = this.resData[0].zone[0].zoneId
-            this.selectedBuilding.value.wingList = this.resData[0].wingList[0].wingId
+            /* this.selectedBuilding.value.wingList = this.resData[0].wingList[0].wingId */
             this._inventoryService.editConfigData(data.value, this.productIdForEdit).subscribe(res => {
                 console.log(res)
                 this.hide()
