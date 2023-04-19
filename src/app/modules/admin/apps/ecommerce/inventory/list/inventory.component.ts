@@ -65,8 +65,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     resData: any;
     productIdForEdit: string;
     campusDropdownList: any[] = [];
-
-
+    campusdata: any[] = [];
+    zonedata: any[] = [];
+    zoneDropdownList: any[] = []
+    wingDropdownList: any[] = [];
+    wingdata: any[] = [];
+    selectedFile: File;
     /**
      * Constructor
      */
@@ -87,11 +91,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
      * On init
      */
 
-    campusdata: any[] = [];
-    zonedata: any[] = [];
-    zoneDropdownList: any[] = []
-    wingDropdownList: any[] = [];
-    wingdata: any[] = [];
+   
     ngOnInit(): void {
 
         this._inventoryService.getAllBuildings().subscribe(res => console.log(res))
@@ -370,7 +370,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     // -----------------------------------------------------------------------------------------------------
 
-    selectedFile: File;
+    
 
     onFileSelected(event): void {
         this.selectedFile = event.target.files[0];
@@ -428,7 +428,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 construction_Cost: res[0].construction_Cost,
                 buildingImage: res[0].buildingImage,
                 description: res[0].description,
-                
+
             })
         })
         /* console.log(this.selectedBuilding.value) */
