@@ -386,7 +386,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         reader.onload = () => {
             const base64String = reader.result.toString().split(',')[1];
             this.selectedBuilding.get('buildingImage').setValue(base64String);
-            console.log(typeof base64String);
+            console.log(base64String);
         };
     }
 
@@ -428,6 +428,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 construction_Cost: res[0].construction_Cost,
                 buildingImage: res[0].buildingImage,
                 description: res[0].description,
+                
             })
         })
         /* console.log(this.selectedBuilding.value) */
@@ -673,10 +674,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
 
     onSubmit(data) {
+        /* console.log(data.value) */
         if (this.updateButton) {
             this.selectedBuilding.value.campus = this.resData[0].campus[0].campusId
             this.selectedBuilding.value.zone = this.resData[0].zone[0].zoneId
-            /* this.selectedBuilding.value.wingList = this.resData[0].wingList[0].wingId */
+            this.selectedBuilding.value.wingList = this.resData[0].wingList[0].wingId
             this._inventoryService.editConfigData(data.value, this.productIdForEdit).subscribe(res => {
                 console.log(res)
                 this.hide()
