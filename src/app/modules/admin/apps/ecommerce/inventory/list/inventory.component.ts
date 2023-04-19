@@ -375,6 +375,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     onFileSelected(event): void {
         this.selectedFile = event.target.files[0];
     }
+    isShow=false;
     upload(): void {
         if (!this.selectedFile) {
             console.log('No file selected');
@@ -388,6 +389,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this.selectedBuilding.get('buildingImage').setValue(base64String);
             console.log(base64String);
         };
+        /* this.isShow=true; */
     }
     /**
      * Toggle product details
@@ -682,7 +684,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.hide()
                 });
         }
-        this.selectedBuilding.reset()
+        /* this.selectedBuilding.reset() */
     }
 
     hide() {
