@@ -160,7 +160,7 @@ export class InventoryService
         formObject.append("wing",data.wingList)
         formObject.append("NoOFFloors",'0')
         formObject.append("IsActive","false")
-        formObject.append("BuildingImage","")
+        formObject.append("BuildingImage",data.buildingImage)
         formObject.append("Floors","[]")
         formObject.append("EntityJson","[]")
 
