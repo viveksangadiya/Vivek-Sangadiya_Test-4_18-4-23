@@ -91,8 +91,25 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
      * On init
      */
 
-   
+    dataa: any[] = []
+    datawings :any[]=[]
     ngOnInit(): void {
+        this._inventoryService.getActiveCampus().pipe(map((res: any) => res.zones)).subscribe(res => {
+            console.log(res)
+        }
+        )
+
+        this._inventoryService.getActiveWings().pipe(map((res: any) => res.wings)).subscribe(res => 
+            {
+
+                console.log(res)
+                /* this.wingdata=res[0] */
+                for(let x in res){
+                    this.wingdata.push(res[x])
+                }
+                console.log(this.wingdata)
+            }
+            )
 
         this._inventoryService.getAllBuildings().subscribe(res => console.log(res))
 
@@ -370,12 +387,16 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     // -----------------------------------------------------------------------------------------------------
 
-    
+    onCampusSelected(campusId: string) {
+        this._inventoryService.getZonesByCampus(campusId).subscribe((zones) => {
+            console.log(zones)
+        });
+    }
 
     onFileSelected(event): void {
         this.selectedFile = event.target.files[0];
     }
-    isShow=false;
+
     upload(): void {
         if (!this.selectedFile) {
             console.log('No file selected');
@@ -389,7 +410,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this.selectedBuilding.get('buildingImage').setValue(base64String);
             console.log(base64String);
         };
-        /* this.isShow=true; */
     }
     /**
      * Toggle product details
@@ -416,8 +436,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 /* zone: res[0].zone, */
                 zone: res[0].zone[0].zoneId,
                 /* wingList: res[0].wingList[0].name, */
-                wingList: res[0].wingList,
-
+                /* wingList: res[0].wingList, */
+                wingList: res[0].wingList[0].wingId,
+                wing:res[0].wingList[0].wingId,
                 construction_Cost: res[0].construction_Cost,
                 buildingImage: res[0].buildingImage,
                 description: res[0].description,
@@ -668,9 +689,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     onSubmit(data) {
         if (this.updateButton) {
-            this.selectedBuilding.value.campus = this.resData[0].campus[0].campusId
+            this.selectedBuilding.value.campus =  this.resData[0].campus[0].campusId
             this.selectedBuilding.value.zone = this.resData[0].zone[0].zoneId
-            /* this.selectedBuilding.value.wingList = this.resData[0].wingList[0].wingId */
+            this.selectedBuilding.value.wing = this.resData[0].wingList[0].wingId
             this._inventoryService.editConfigData(data.value, this.productIdForEdit).subscribe(res => {
                 console.log(res)
                 this.hide()
@@ -693,9 +714,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     }
     createProduct(): void {
         this.show = !this.show
-     
+
         // Create the product
-       
+
         this._inventoryService.createProduct().subscribe((newProduct) => {
 
             // Go to new product

@@ -147,7 +147,7 @@
                             <mat-label>
                                 Campus
                             </mat-label>
-                            <mat-select  [formControlName]="'campus'">
+                            <mat-select  [formControlName]="'campus'" (selectionChange)="onCampusSelected($event.value)">
                             <mat-option *ngFor="let data of campusdata"  [value]="data['campusId']">
                               {{data['name']}}
                             </mat-option>
@@ -166,12 +166,22 @@
                         </mat-form-field>
 
                         <mat-form-field class="w-full">
+                            <mat-label>
+                                Wing
+                            </mat-label>
+                            <mat-select  [formControlName]="'wing'">
+                            <mat-option *ngFor="let data of wingdata"  [value]="data['wingId']">
+                              {{data['name']}}
+                            </mat-option>
+                        </mat-select>
+                        </mat-form-field>
+                        <!-- <mat-form-field class="w-full">
                             <mat-label>Wing</mat-label>
                             <input
                                 matInput
                                 [formControlName]="'wing'"
                             />
-                        </mat-form-field>
+                        </mat-form-field> -->
 
                         <mat-form-field class="w-full">
                             <mat-label>Renovation_History</mat-label>

@@ -138,9 +138,19 @@ export class InventoryService
     }
 
 
-    getZonesByCampus(campusId:string){
+    getZonesByCampus(id:string){
         const url=`https://cmi-ofm.azurewebsites.net/api/Zone/getZonesByCampus`
-        return this._httpClient.post(url,campusId)
+        return this._httpClient.post(url,{
+            campusId : id
+        })
+    }
+
+    getActiveCampus(){
+        return this._httpClient.get("https://cmi-ofm.azurewebsites.net/api/Campus/GetActiveCampus")
+    }
+
+    getActiveWings(){
+        return this._httpClient.get("https://cmi-ofm.azurewebsites.net/api/Wing/GetActiveWings")
     }
 
     editConfigData(data:any,productId:string){
