@@ -11,7 +11,6 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 import { Building, Campu } from '../../building';
 import { DatePipe } from '@angular/common';
 
-
 @Component({
     selector: 'inventory-list',
     templateUrl: './inventory.component.html',
@@ -242,19 +241,19 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         });
 
         this.selectedBuilding = this._formBuilder.group({
-            buildingName: [''],
+            buildingName: ['',[Validators.required]],
             buildingNo: [''],
             date_constructed: [new Date('04/06/2023')],
             architect: [''],
             contractor: [''],
-            campus: [''],
+            campus: ['',[Validators.required]],
             renovation_History: [''],
-            zone: [''],
+            zone: ['',[Validators.required]],
             wingList: [''],
             construction_Cost: [0],
             buildingImage: [''],
             description: [''],
-            wing: ['']
+            wing: ['',[Validators.required]]
         })
 
 
@@ -416,8 +415,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         const reader = new FileReader();
         reader.readAsDataURL(this.selectedFile);
         reader.onload = () => {
-            const base64String = reader.result.toString().split(',')[1];
-            this.selectedBuilding.get('buildingImage').setValue(base64String);
+            /* const base64String = reader.result.toString().split(',')[1]; */
+            const base64String = reader.result.toString();
+            const image=base64String.substring(22)
+            this.selectedBuilding.get('buildingImage').setValue(image);
             console.log(base64String);
         };
     }
@@ -435,23 +436,22 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this.resData = res
             this.selectedBuilding.patchValue({
                 buildingName: res[0].buildingName,
-                buildingNo: res[0].buildingNo,
-                /* date_constructed : res[0].date_constructed, */
-                architect: res[0].architect,
-                contractor: res[0].contractor,
-                /* campus:res[0].campus, */
+                buildingNo: res[0]?.buildingNo,
+                date_constructed : res[0]?.date_constructed,
+                architect: res[0]?.architect,
+                contractor: res[0]?.contractor,
                 campus: res[0].campus[0]?.campusId,
                 /* campus: res[0].campus[0].name, */
-                renovation_History: res[0].renovation_History,
+                renovation_History: res[0]?.renovation_History,
                 /* zone: res[0].zone, */
                 zone: res[0].zone[0]?.zoneId,
                 /* wingList: res[0].wingList[0].name, */
                 /* wingList: res[0].wingList, */
                 wingList: res[0].wingList[0]?.wingId,
                 wing:res[0].wingList[0]?.wingId,
-                construction_Cost: res[0].construction_Cost,
-                buildingImage: res[0].buildingImage,
-                description: res[0].description,
+                construction_Cost: res[0]?.construction_Cost,
+                buildingImage: res[0]?.buildingImage,
+                description: res[0]?.description,
 
             })
         })
@@ -699,9 +699,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     onSubmit(data) {
         if (this.updateButton) {
-            this.selectedBuilding.value.campus =  this.resData[0].campus[0].campusId
-            this.selectedBuilding.value.zone = this.resData[0].zone[0].zoneId
-            this.selectedBuilding.value.wing = this.resData[0].wingList[0].wingId
+            this.selectedBuilding.value.campus =  this.resData[0].campus[0]?.campusId
+            this.selectedBuilding.value.zone = this.resData[0].zone[0]?.zoneId
+            this.selectedBuilding.value.wing = this.resData[0].wingList[0]?.wingId
             this._inventoryService.editConfigData(data.value, this.productIdForEdit).subscribe(res => {
                 console.log(res)
                 this.hide()
@@ -715,7 +715,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.hide()
                 });
         }
-        /* this.selectedBuilding.reset() */
+        this.selectedBuilding.reset()
     }
 
     hide() {
