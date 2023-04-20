@@ -440,15 +440,15 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 architect: res[0].architect,
                 contractor: res[0].contractor,
                 /* campus:res[0].campus, */
-                campus: res[0].campus[0].campusId,
+                campus: res[0].campus[0]?.campusId,
                 /* campus: res[0].campus[0].name, */
                 renovation_History: res[0].renovation_History,
                 /* zone: res[0].zone, */
-                zone: res[0].zone[0].zoneId,
+                zone: res[0].zone[0]?.zoneId,
                 /* wingList: res[0].wingList[0].name, */
                 /* wingList: res[0].wingList, */
-                wingList: res[0].wingList[0].wingId,
-                wing:res[0].wingList[0].wingId,
+                wingList: res[0].wingList[0]?.wingId,
+                wing:res[0].wingList[0]?.wingId,
                 construction_Cost: res[0].construction_Cost,
                 buildingImage: res[0].buildingImage,
                 description: res[0].description,
