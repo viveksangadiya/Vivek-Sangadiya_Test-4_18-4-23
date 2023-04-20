@@ -243,7 +243,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.selectedBuilding = this._formBuilder.group({
             buildingName: ['',[Validators.required]],
             buildingNo: [''],
-            date_constructed: [new Date('04/06/2023')],
+            date_constructed: [''],
             architect: [''],
             contractor: [''],
             campus: ['',[Validators.required]],
